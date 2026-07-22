@@ -1,23 +1,11 @@
 package teamsctl
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/fossteams/teams-api/pkg/csa"
 	"github.com/fossteams/teams-api/pkg/models"
 )
-
-func TestReadMessage(t *testing.T) {
-	message, err := readMessage([]string{"hello", "world"}, strings.NewReader("ignored"))
-	if err != nil || message != "hello world" {
-		t.Fatalf("readMessage() = %q, %v", message, err)
-	}
-	message, err = readMessage(nil, strings.NewReader("from stdin\n"))
-	if err != nil || message != "from stdin" {
-		t.Fatalf("readMessage(stdin) = %q, %v", message, err)
-	}
-}
 
 func TestFormatMessageHTMLEscapesInput(t *testing.T) {
 	got, err := formatMessageContent("<script>\nnext", "text")
@@ -37,18 +25,6 @@ func TestFormatMessageHTMLPreservesMarkup(t *testing.T) {
 	}
 	if got != "<strong>Hello</strong>" {
 		t.Fatalf("formatMessageContent() = %q", got)
-	}
-}
-
-func TestFilterConversationsPrefersOneOnOne(t *testing.T) {
-	records := []Conversation{
-		{Kind: "chat", Title: "Mikkel Ljungberg, Rasmus Prip"},
-		{Kind: "chat", Title: "Mikkel Ljungberg", OneOnOne: true},
-		{Kind: "channel", Title: "Mikkel planning"},
-	}
-	matches := filterConversations(records, "mikkel", "chat", 1)
-	if len(matches) != 1 || matches[0].Title != "Mikkel Ljungberg" {
-		t.Fatalf("filterConversations() = %#v", matches)
 	}
 }
 

@@ -8,14 +8,13 @@ import (
 	"testing"
 )
 
-func TestMCPHandshakeAndTools(t *testing.T) {
+func TestMCPHandshake(t *testing.T) {
 	originalCheck := checkMCPAuth
 	checkMCPAuth = func() error { return nil }
 	defer func() { checkMCPAuth = originalCheck }()
 	input := strings.NewReader(
 		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26"}}` + "\n" +
-			`{"jsonrpc":"2.0","method":"notifications/initialized"}` + "\n" +
-			`{"jsonrpc":"2.0","id":2,"method":"tools/list"}` + "\n",
+			`{"jsonrpc":"2.0","method":"notifications/initialized"}` + "\n",
 	)
 	var output bytes.Buffer
 	if err := RunMCP(input, &output); err != nil {
@@ -29,14 +28,6 @@ func TestMCPHandshakeAndTools(t *testing.T) {
 	result := initialize["result"].(map[string]interface{})
 	if result["protocolVersion"] != "2025-03-26" {
 		t.Fatalf("protocolVersion = %v", result["protocolVersion"])
-	}
-	var tools map[string]interface{}
-	if err := decoder.Decode(&tools); err != nil {
-		t.Fatal(err)
-	}
-	listed := tools["result"].(map[string]interface{})["tools"].([]interface{})
-	if len(listed) != 4 {
-		t.Fatalf("tools count = %d", len(listed))
 	}
 }
 

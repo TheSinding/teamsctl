@@ -1,5 +1,5 @@
 PREFIX ?= $(HOME)/.local
-BUILD_DIR ?= bin
+BUILD_DIR ?= out/bin
 BINARY := teamsctl
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X thesinding/teamsctl/internal/version.Value=$(VERSION)
