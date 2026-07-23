@@ -34,7 +34,7 @@ So if you want to outsource talking to Mike or any other colleagues for that mat
 
 > Me: "GPT5.6 Make this"
 
-> GPT5.6: "_BEEP_ _BOOP_ OKAY" _Proceeds to puke out Go code with 800 lines in a single file_
+> GPT5.6: "_BEEP_ _BOOP_ OKAY" _Proceeds to puke out 800 lines of Go code to a single file_
 
 See **that's** how the modern day man does it! 🚀
 
