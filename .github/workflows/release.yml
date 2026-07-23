@@ -76,3 +76,75 @@ jobs:
         with:
           generate_release_notes: true
           files: dist/*
+
+  update-homebrew:
+    name: Update Homebrew formula
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: update-homebrew
+      cancel-in-progress: false
+    steps:
+      - name: Check release is latest
+        id: latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(gh api repos/TheSinding/teamsctl/releases/latest --jq '.tag_name')
+          if [[ "$latest" == "$GITHUB_REF_NAME" ]]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Skipping ${GITHUB_REF_NAME}; latest release is ${latest}."
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out Homebrew tap
+        if: steps.latest.outputs.current == 'true'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: TheSinding/homebrew-tap
+          ssh-key: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+
+      - name: Update teamsctl formula
+        if: steps.latest.outputs.current == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          source_url="https://github.com/TheSinding/teamsctl/archive/refs/tags/${VERSION}.tar.gz"
+          archive="${RUNNER_TEMP}/teamsctl-${VERSION}.tar.gz"
+          curl --fail --location --retry 5 --retry-all-errors "$source_url" --output "$archive"
+          checksum_output=$(sha256sum "$archive")
+          checksum=${checksum_output%% *}
+          [[ "$checksum" =~ ^[0-9a-f]{64}$ ]] || { echo "Invalid source checksum." >&2; exit 1; }
+
+          if grep -Fxq "  url \"${source_url}\"" Formula/teamsctl.rb &&
+             grep -Fxq "  sha256 \"${checksum}\"" Formula/teamsctl.rb; then
+            echo "Formula already targets teamsctl ${VERSION}."
+            exit 0
+          fi
+
+          url_count=$(grep -c '^  url "' Formula/teamsctl.rb || true)
+          checksum_count=$(grep -c '^  sha256 "' Formula/teamsctl.rb || true)
+          [[ "$url_count" -eq 1 ]] || { echo "Expected one formula URL, found ${url_count}." >&2; exit 1; }
+          [[ "$checksum_count" -eq 1 ]] || { echo "Expected one formula checksum, found ${checksum_count}." >&2; exit 1; }
+
+          sed -i "s#^  url \".*\"#  url \"${source_url}\"#" Formula/teamsctl.rb
+          sed -i "s#^  sha256 \".*\"#  sha256 \"${checksum}\"#" Formula/teamsctl.rb
+
+          grep -Fxq "  url \"${source_url}\"" Formula/teamsctl.rb
+          grep -Fxq "  sha256 \"${checksum}\"" Formula/teamsctl.rb
+
+          latest=$(gh api repos/TheSinding/teamsctl/releases/latest --jq '.tag_name')
+          if [[ "$latest" != "$VERSION" ]]; then
+            echo "Skipping ${VERSION}; latest release is now ${latest}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/teamsctl.rb
+          git commit -m "teamsctl ${VERSION}"
+          git push origin HEAD:main
