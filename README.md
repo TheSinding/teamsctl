@@ -5,8 +5,17 @@ stdio as nature intended.
 
 ## Install
 
+Install the latest release:
+
+```sh
+wget -qO- https://raw.githubusercontent.com/TheSinding/teamsctl/main/scripts/install.sh | sh
+```
+
+This installs the binary to `${HOME}/.local/bin/teamsctl`. From a Git checkout,
+build and install the current source instead:
+
 ```bash
-make install                    # ~/.local/bin/teamsctl
+make install
 sudo make install PREFIX=/usr/local
 ```
 
@@ -74,8 +83,8 @@ Advanced consumers can bypass name/email lookup with `mention_entities`, using
 
 ## Add To An Agent
 
-Replace `/absolute/path/to/teamsctl` with `command -v teamsctl` output, then
-restart the agent harness.
+These examples assume the default install location `${HOME}/.local/bin/teamsctl`.
+Restart the agent harness after changing its configuration.
 
 <details>
 <summary>OpenCode</summary>
@@ -88,7 +97,7 @@ Add to `~/.config/opencode/opencode.json`:
   "mcp": {
     "teams": {
       "type": "local",
-      "command": ["/absolute/path/to/teamsctl", "mcp"],
+      "command": ["${HOME}/.local/bin/teamsctl", "mcp"],
       "enabled": true
     }
   }
@@ -101,7 +110,7 @@ Add to `~/.config/opencode/opencode.json`:
 <summary>Claude Code</summary>
 
 ```bash
-claude mcp add --scope user teams -- /absolute/path/to/teamsctl mcp
+claude mcp add --scope user teams -- "$HOME/.local/bin/teamsctl" mcp
 ```
 
 Verify with `claude mcp list`.
@@ -112,14 +121,14 @@ Verify with `claude mcp list`.
 <summary>Codex</summary>
 
 ```bash
-codex mcp add teams -- /absolute/path/to/teamsctl mcp
+codex mcp add teams -- "$HOME/.local/bin/teamsctl" mcp
 ```
 
 Equivalent `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.teams]
-command = "/absolute/path/to/teamsctl"
+command = "${HOME}/.local/bin/teamsctl"
 args = ["mcp"]
 ```
 
@@ -140,7 +149,7 @@ Add to `~/.config/mcp/mcp.json`:
 {
   "mcpServers": {
     "teams": {
-      "command": "/absolute/path/to/teamsctl",
+      "command": "${HOME}/.local/bin/teamsctl",
       "args": ["mcp"],
       "lifecycle": "lazy",
       "directTools": true
