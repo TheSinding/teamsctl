@@ -38,7 +38,7 @@ So if you want to outsource talking to Mike or any other colleagues for that mat
 
 See **that's** how the modern day man does it! 🚀
 
-<img width="276" height="148" alt="image" src="https://github.com/user-attachments/assets/c6b6831e-e2c7-43b4-b8ed-749d0e945140" />
+<img width="276" height="148" alt="image" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDY4NXJnMnRpNW8zMmswYTc4OHN0eHl1NHRoZHlndHA5dnp4YXp1eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qUB8aayj9DNQI/giphy.gif" />
 
 ## Requirements
 
