@@ -38,6 +38,8 @@ So if you want to outsource talking to Mike or any other colleagues for that mat
 
 See **that's** how the modern day man does it! 🚀
 
+<img width="276" height="148" alt="image" src="https://github.com/user-attachments/assets/c6b6831e-e2c7-43b4-b8ed-749d0e945140" />
+
 ## Requirements
 
 - An insanely slow Microsoft Teams account.
