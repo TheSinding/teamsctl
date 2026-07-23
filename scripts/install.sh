@@ -1,12 +1,11 @@
 #!/bin/sh
 set -eu
 
-REPOSITORY=${REPOSITORY:-TheSinding/teamsctl}
 PREFIX=${PREFIX:-"${HOME}/.local"}
 BIN_DIR=${BIN_DIR:-"${PREFIX}/bin"}
 
 TMP_DIR=$(mktemp -d)
-trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
+trap 'rm -rf "$TMP_DIR"' 0 HUP INT TERM
 
 is_checkout() {
   [ -f "$1/go.mod" ] || return 1
@@ -42,7 +41,7 @@ else
     if command -v curl >/dev/null 2>&1; then
       curl -fsSL "$1" -o "$2"
     elif command -v wget >/dev/null 2>&1; then
-      wget -qO "$2" "$1"
+      wget -O "$2" "$1"
     else
       echo "teamsctl: curl or wget is required" >&2
       exit 1
@@ -63,18 +62,15 @@ else
     *) echo "teamsctl: unsupported architecture: $arch" >&2; exit 1 ;;
   esac
 
-  version=${VERSION:-}
+  download "https://api.github.com/repos/TheSinding/teamsctl/releases/latest" "$TMP_DIR/release.json"
+  version=$(sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' "$TMP_DIR/release.json")
   if [ -z "$version" ]; then
-    download "https://api.github.com/repos/${REPOSITORY}/releases/latest" "$TMP_DIR/release.json"
-    version=$(sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' "$TMP_DIR/release.json")
-    if [ -z "$version" ]; then
-      echo "teamsctl: unable to determine latest release" >&2
-      exit 1
-    fi
+    echo "teamsctl: unable to determine latest release" >&2
+    exit 1
   fi
 
   archive="teamsctl-${version}-${os}-${arch}.tar.gz"
-  release_url="https://github.com/${REPOSITORY}/releases/download/${version}"
+  release_url="https://github.com/TheSinding/teamsctl/releases/download/${version}"
   echo "Downloading teamsctl ${version} for ${os}/${arch}..."
   download "$release_url/$archive" "$TMP_DIR/$archive"
   download "$release_url/checksums.txt" "$TMP_DIR/checksums.txt"

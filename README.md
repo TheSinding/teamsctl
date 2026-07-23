@@ -11,6 +11,12 @@ Install the latest release:
 wget -qO- https://raw.githubusercontent.com/TheSinding/teamsctl/main/scripts/install.sh | sh
 ```
 
+On macOS without `wget`, use:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/TheSinding/teamsctl/main/scripts/install.sh | sh
+```
+
 This installs the binary to `${HOME}/.local/bin/teamsctl`. From a Git checkout,
 build and install the current source instead:
 
@@ -97,7 +103,7 @@ Add to `~/.config/opencode/opencode.json`:
   "mcp": {
     "teams": {
       "type": "local",
-      "command": ["${HOME}/.local/bin/teamsctl", "mcp"],
+      "command": ["{env:HOME}/.local/bin/teamsctl", "mcp"],
       "enabled": true
     }
   }
@@ -128,8 +134,8 @@ Equivalent `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.teams]
-command = "${HOME}/.local/bin/teamsctl"
-args = ["mcp"]
+command = "/bin/sh"
+args = ["-c", "exec \"$HOME/.local/bin/teamsctl\" mcp"]
 ```
 
 </details>
@@ -149,8 +155,8 @@ Add to `~/.config/mcp/mcp.json`:
 {
   "mcpServers": {
     "teams": {
-      "command": "${HOME}/.local/bin/teamsctl",
-      "args": ["mcp"],
+      "command": "/bin/sh",
+      "args": ["-c", "exec \"$HOME/.local/bin/teamsctl\" mcp"],
       "lifecycle": "lazy",
       "directTools": true
     }
