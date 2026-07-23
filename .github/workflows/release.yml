@@ -76,3 +76,37 @@ jobs:
         with:
           generate_release_notes: true
           files: dist/*
+
+  update-homebrew:
+    name: Update Homebrew formula
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: TheSinding/homebrew-tap
+          ssh-key: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+
+      - name: Update teamsctl formula
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          source_url="https://github.com/TheSinding/teamsctl/archive/refs/tags/${VERSION}.tar.gz"
+          archive="${RUNNER_TEMP}/teamsctl-${VERSION}.tar.gz"
+          curl --fail --location --retry 5 --retry-all-errors "$source_url" --output "$archive"
+          checksum=$(sha256sum "$archive" | cut -d ' ' -f 1)
+
+          sed -i "s#^  url \".*\"#  url \"${source_url}\"#" Formula/teamsctl.rb
+          sed -i "s#^  sha256 \".*\"#  sha256 \"${checksum}\"#" Formula/teamsctl.rb
+
+          if git diff --quiet; then
+            echo "Formula already targets teamsctl ${VERSION}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/teamsctl.rb
+          git commit -m "teamsctl ${VERSION}"
+          git push origin HEAD:main
