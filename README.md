@@ -82,7 +82,7 @@ teamsctl auth
 ```
 
 Authentication opens Chrome with a persistent profile and writes tokens to
-`~/.config/teamsctl`. Chrome is required; Node and Electron are not.
+`~/.config/teamsctl` (or `$XDG_CONFIG_HOME/teamsctl` if set). Chrome is required; Node and Electron are not.
 
 Optional autofill:
 

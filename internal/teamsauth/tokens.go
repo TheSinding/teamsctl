@@ -64,6 +64,9 @@ func saveAuthToken(configDir string, kind authTokenKind, token string) error {
 }
 
 func authConfigDir() (string, error) {
+	if xdgConfigHome := os.Getenv("XDG_CONFIG_HOME"); filepath.IsAbs(xdgConfigHome) {
+		return filepath.Join(xdgConfigHome, "teamsctl"), nil
+	}
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("find home directory: %w", err)
