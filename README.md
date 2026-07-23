@@ -141,8 +141,10 @@ Advanced consumers can bypass name/email lookup with `mention_entities`, using
 
 ## Add To An Agent
 
-These examples assume the default install location `${HOME}/.local/bin/teamsctl`.
-Restart the agent harness after changing its configuration.
+These examples assume `teamsctl` is available on your `PATH` (for example,
+when installed via Homebrew). If not, replace `teamsctl` with the full path to
+your binary (for example, `PATH/TO/teamsctl`). Restart the agent harness after
+changing its configuration.
 
 <details>
 <summary>OpenCode</summary>
@@ -155,7 +157,7 @@ Add to `~/.config/opencode/opencode.json`:
   "mcp": {
     "teams": {
       "type": "local",
-      "command": ["{env:HOME}/.local/bin/teamsctl", "mcp"],
+      "command": ["teamsctl", "mcp"],
       "enabled": true
     }
   }
@@ -168,7 +170,7 @@ Add to `~/.config/opencode/opencode.json`:
 <summary>Claude Code</summary>
 
 ```bash
-claude mcp add --scope user teams -- "$HOME/.local/bin/teamsctl" mcp
+claude mcp add --scope user teams -- teamsctl mcp
 ```
 
 Verify with `claude mcp list`.
@@ -179,7 +181,7 @@ Verify with `claude mcp list`.
 <summary>Codex</summary>
 
 ```bash
-codex mcp add teams -- "$HOME/.local/bin/teamsctl" mcp
+codex mcp add teams -- teamsctl mcp
 ```
 
 Equivalent `~/.codex/config.toml`:
@@ -187,7 +189,7 @@ Equivalent `~/.codex/config.toml`:
 ```toml
 [mcp_servers.teams]
 command = "/bin/sh"
-args = ["-c", "exec \"$HOME/.local/bin/teamsctl\" mcp"]
+args = ["-c", "exec teamsctl mcp"]
 ```
 
 </details>
@@ -208,7 +210,7 @@ Add to `~/.config/mcp/mcp.json`:
   "mcpServers": {
     "teams": {
       "command": "/bin/sh",
-      "args": ["-c", "exec \"$HOME/.local/bin/teamsctl\" mcp"],
+      "args": ["-c", "exec teamsctl mcp"],
       "lifecycle": "lazy",
       "directTools": true
     }
