@@ -11,6 +11,8 @@ require (
 	github.com/zalando/go-keyring v0.2.8
 )
 
+replace github.com/fossteams/teams-api => ./third_party/teams-api
+
 require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
