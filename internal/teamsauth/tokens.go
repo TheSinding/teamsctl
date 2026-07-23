@@ -68,5 +68,5 @@ func authConfigDir() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("find home directory: %w", err)
 	}
-	return filepath.Join(home, ".config", "fossteams"), nil
+	return filepath.Join(home, ".config", "teamsctl"), nil
 }
