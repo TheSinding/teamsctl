@@ -12,7 +12,7 @@ or
 
 > "It's a super duper great idea to have an LLM use my name in team"
 
-## WELL DO I HAVE THE SOLUTION FOR YOU! 🚨
+## WELL DO I HAVE THE SOLUTION FOR YOU! 🫵
 
 Now with **40%** more slop, and **20x** more bullshit and a **100% vibe coded codebase** from top to fucking bottom - **Now you can**!
 
