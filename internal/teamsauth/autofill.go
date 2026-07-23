@@ -55,7 +55,7 @@ func fillAuthLogin(ctx context.Context, submitted map[string]bool, options Optio
 		filled, fillErr := fillAuthField(ctx, field.selector, field.value)
 		if fillErr != nil {
 			if ctx.Err() == nil {
-				fmt.Fprintf(stdout, "Login autofill paused: %v\n", fillErr)
+				_, _ = fmt.Fprintf(stdout, "Login autofill paused: %v\n", fillErr)
 			}
 			return
 		}
