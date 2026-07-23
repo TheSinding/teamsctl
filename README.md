@@ -40,8 +40,8 @@ See **that's** how the modern day man does it! 🚀
 
 ## Requirements
 
-- A crappy Microsoft Teams account.
-- A shitty Google Chrome or another Chromium-based browser for authentication. Use `-chrome` or `CHROME_PATH` for Chromium, Helium, or a non-standard installation; macOS `.app` paths are accepted.
+- An insanely slow Microsoft Teams account.
+- ~Shitty~ Google Chrome or another Chromium-based browser for authentication. Use `-chrome` or `CHROME_PATH` for Chromium, Helium, or a non-standard installation; macOS `.app` paths are accepted.
 
 
 ## Install
