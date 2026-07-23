@@ -1,11 +1,45 @@
 # teamsctl
 
-Microsoft Teams automation without opening Teams. CLI in front, MCP out back,
-stdio as nature intended.
+Have you ever thougth to yourself - "Geez, wouldn't it be nice, if it was easier to send AI slop and responses to my coworker.."
+
+or "Holy hell, I simply just hate talking to Mike... Fucking Mike, with his cool stories and short arms - I wish I could make him speak to Claude or GPT or some chinese model, that does not know anything about Tiananmen Square."
+
+or "It's a super duper great idea to have an LLM use my name in team"
+
+
+## WELL DO I HAVE THE SOLUTION FOR YOU!
+
+Now with 40% more slop, and 20x more bullshit and 100% vibe coded from top to fucking bottom - Now you can!
+
+Introducing the **teamsctl** (_teams cuddle_ because it sounds cute).
+
+This allows you the ability to use teams from the commandline.. BUT WAIT THERE IS MORE 
+
+For a limited time only, now you can use our new MCP SERVER!
+
+Huh! Wadda you say!? Does **that** not sound like a great fucking idea?
+
+Only 4.99$ and you get a lifetime subscription to a vibe coded Go mess, with a convoluted and hacky authenication method!
+
+**I HAVE PERSONALLY NOT REVIEWD A SINGLE FUCKING THING** 
+
+> Me: "GPT5.6 Make this"
+
+> GPT5.6: "_BEEP_ _BOOP_ OKAY" _Proceeds to puke out Go code with 800 lines in a single file_
+
+See that's how the modern day man does it!
+
+
 
 ## Install
 
-Install the latest release:
+With Homebrew:
+
+```sh
+brew install TheSinding/tap/teamsctl
+```
+
+Or install the latest release directly:
 
 ```sh
 wget -qO- https://raw.githubusercontent.com/TheSinding/teamsctl/main/scripts/install.sh | sh
