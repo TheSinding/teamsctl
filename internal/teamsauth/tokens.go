@@ -3,12 +3,18 @@ package teamsauth
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/zalando/go-keyring"
 )
+
+// keyringService is the OS keyring service name under which tokens are stored.
+const keyringService = "teamsctl"
 
 func decodeAuthClaims(token string) (authClaims, error) {
 	parts := strings.Split(token, ".")
@@ -32,12 +38,11 @@ func CheckTokens() error {
 		return err
 	}
 	for _, kind := range []authTokenKind{authTeams, authSkype, authChatSvcAgg} {
-		path := filepath.Join(configDir, "token-"+string(kind)+".jwt")
-		data, readErr := os.ReadFile(path)
-		if readErr != nil {
-			return fmt.Errorf("%s token unavailable; run teamsctl auth: %w", kind, readErr)
+		token, loadErr := loadAuthToken(configDir, kind)
+		if loadErr != nil {
+			return fmt.Errorf("%s token unavailable; run teamsctl auth: %w", kind, loadErr)
 		}
-		if validateErr := validateAuthToken(kind, strings.TrimSpace(string(data)), time.Now()); validateErr != nil {
+		if validateErr := validateAuthToken(kind, strings.TrimSpace(token), time.Now()); validateErr != nil {
 			return validateErr
 		}
 	}
@@ -55,12 +60,58 @@ func validateAuthToken(kind authTokenKind, token string, now time.Time) error {
 	return nil
 }
 
+// saveAuthToken stores a token in the OS keyring, preferring it over plaintext
+// file storage. If the keyring backend is unavailable (e.g. no Secret Service
+// running on a headless Linux host), it falls back to the file-based storage
+// used previously. Any stale on-disk copy is removed once a token is
+// successfully migrated to the keyring.
 func saveAuthToken(configDir string, kind authTokenKind, token string) error {
-	path := filepath.Join(configDir, "token-"+string(kind)+".jwt")
+	if err := keyring.Set(keyringService, string(kind), token); err == nil {
+		if removeErr := removeAuthTokenFile(configDir, kind); removeErr != nil {
+			return fmt.Errorf("remove stale %s token file: %w", kind, removeErr)
+		}
+		return nil
+	}
+	return saveAuthTokenFile(configDir, kind, token)
+}
+
+// loadAuthToken reads a token from the OS keyring, falling back to the
+// file-based storage if the keyring backend is unavailable or has no entry
+// for the requested token.
+func loadAuthToken(configDir string, kind authTokenKind) (string, error) {
+	token, err := keyring.Get(keyringService, string(kind))
+	if err == nil {
+		return token, nil
+	}
+	return loadAuthTokenFile(configDir, kind)
+}
+
+func authTokenFilePath(configDir string, kind authTokenKind) string {
+	return filepath.Join(configDir, "token-"+string(kind)+".jwt")
+}
+
+func saveAuthTokenFile(configDir string, kind authTokenKind, token string) error {
+	path := authTokenFilePath(configDir, kind)
 	if err := os.WriteFile(path, []byte(token), 0o600); err != nil {
 		return fmt.Errorf("save %s token: %w", kind, err)
 	}
 	return os.Chmod(path, 0o600)
+}
+
+func loadAuthTokenFile(configDir string, kind authTokenKind) (string, error) {
+	data, err := os.ReadFile(authTokenFilePath(configDir, kind))
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func removeAuthTokenFile(configDir string, kind authTokenKind) error {
+	err := os.Remove(authTokenFilePath(configDir, kind))
+	if err == nil || errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	return err
 }
 
 func authConfigDir() (string, error) {
