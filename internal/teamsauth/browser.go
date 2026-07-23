@@ -114,7 +114,7 @@ func Authenticate(parent context.Context, stdout io.Writer, options Options) err
 	if err = saveAuthToken(configDir, authTeams, teamsToken); err != nil {
 		return err
 	}
-	fmt.Fprintln(stdout, "Saved teams token.")
+	_, _ = fmt.Fprintln(stdout, "Saved teams token.")
 	if teamsClaims.TenantID != "" && teamsClaims.TenantID != authMicrosoftTenantID {
 		tenantID = teamsClaims.TenantID
 	}
@@ -151,7 +151,7 @@ func Authenticate(parent context.Context, stdout io.Writer, options Options) err
 	if err = saveAuthToken(configDir, authSkype, skypeToken); err != nil {
 		return err
 	}
-	fmt.Fprintln(stdout, "Saved skype token.")
+	_, _ = fmt.Fprintln(stdout, "Saved skype token.")
 
 	chatToken, err := captureAuthToken(browserContext, navigationEvents, authChatSvcAgg, tenantID, options.Email, timeout, stdout)
 	if err != nil {
@@ -167,24 +167,24 @@ func Authenticate(parent context.Context, stdout io.Writer, options Options) err
 	if err = saveAuthToken(configDir, authChatSvcAgg, chatToken); err != nil {
 		return err
 	}
-	fmt.Fprintln(stdout, "Saved chatsvcagg token.")
-	fmt.Fprintln(stdout, "Authentication complete.")
+	_, _ = fmt.Fprintln(stdout, "Saved chatsvcagg token.")
+	_, _ = fmt.Fprintln(stdout, "Authentication complete.")
 	return nil
 }
 
 func resolveChromeExecutable(path string) (string, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return "", fmt.Errorf("Chrome executable %q: %w", path, err)
+		return "", fmt.Errorf("chrome executable %q: %w", path, err)
 	}
 	if !info.IsDir() {
 		if runtime.GOOS != "windows" && info.Mode().Perm()&0o111 == 0 {
-			return "", fmt.Errorf("Chrome executable %q is not executable", path)
+			return "", fmt.Errorf("chrome executable %q is not executable", path)
 		}
 		return path, nil
 	}
 	if !strings.EqualFold(filepath.Ext(path), ".app") {
-		return "", fmt.Errorf("Chrome path %q is a directory; pass an executable or macOS app bundle", path)
+		return "", fmt.Errorf("chrome path %q is a directory; pass an executable or macOS app bundle", path)
 	}
 
 	binDir := filepath.Join(path, "Contents", "MacOS")
@@ -205,12 +205,12 @@ func resolveChromeExecutable(path string) (string, error) {
 			continue
 		}
 		if executable != "" {
-			return "", fmt.Errorf("Chrome app %q contains multiple executables; pass the executable in Contents/MacOS", path)
+			return "", fmt.Errorf("chrome app %q contains multiple executables; pass the executable in Contents/MacOS", path)
 		}
 		executable = filepath.Join(binDir, entry.Name())
 	}
 	if executable == "" {
-		return "", fmt.Errorf("Chrome app %q contains no executable in Contents/MacOS", path)
+		return "", fmt.Errorf("chrome app %q contains no executable in Contents/MacOS", path)
 	}
 	return executable, nil
 }
@@ -238,5 +238,5 @@ func findChrome() (string, error) {
 			return candidate, nil
 		}
 	}
-	return "", fmt.Errorf("Chrome not found; set CHROME_PATH or use -chrome")
+	return "", fmt.Errorf("chrome not found; set CHROME_PATH or use -chrome")
 }

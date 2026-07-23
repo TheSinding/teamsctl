@@ -43,7 +43,7 @@ func captureAuthToken(ctx context.Context, events <-chan string, kind authTokenK
 	}
 
 drained:
-	fmt.Fprintf(stdout, "Authorizing %s with tenant %s...\n", kind, tenantID)
+	_, _ = fmt.Fprintf(stdout, "Authorizing %s with tenant %s...\n", kind, tenantID)
 	navigationContext, cancelNavigation := context.WithCancel(ctx)
 	defer cancelNavigation()
 	navigationDone := make(chan error, 1)
@@ -74,7 +74,7 @@ drained:
 				for key := range values {
 					keys = append(keys, key)
 				}
-				fmt.Fprintf(stdout, "Auth callback kind=%s state=%q keys=%s\n", kind, values.Get("state"), strings.Join(keys, ","))
+				_, _ = fmt.Fprintf(stdout, "Auth callback kind=%s state=%q keys=%s\n", kind, values.Get("state"), strings.Join(keys, ","))
 			}
 			token, matched, parseErr := parseAuthCallback(navigatedURL, kind, expectedState)
 			if parseErr != nil {
@@ -169,7 +169,7 @@ func getAuthTenants(token string) ([]authTenant, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get Teams tenants: %w", err)
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
 		return nil, fmt.Errorf("get Teams tenants: status %d", response.StatusCode)
 	}
