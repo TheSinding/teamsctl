@@ -81,8 +81,12 @@ Authenticate once before using the CLI or MCP server:
 teamsctl auth
 ```
 
-Authentication opens Chrome with a persistent profile and writes tokens to
-`~/.config/teamsctl` (or `$XDG_CONFIG_HOME/teamsctl` if set). Chrome is required; Node and Electron are not.
+Authentication opens Chrome with a persistent profile and stores tokens in
+your OS keyring (macOS Keychain, Windows Credential Manager, or the Linux
+Secret Service) when available. If no keyring backend is available, tokens
+fall back to plain files under `~/.config/teamsctl` (or
+`$XDG_CONFIG_HOME/teamsctl` if set), created with `0600` permissions. Chrome
+is required; Node and Electron are not.
 
 Optional autofill:
 
