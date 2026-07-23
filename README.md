@@ -24,13 +24,13 @@ For a limited time only, you can use our new **MCP SERVER**! 🔌
 
 Huh! Wadda you say!? Does **that** not sound like a great fucking idea?
 
-What are you waiting for?!
-
 For only **4.99$** you'll get a lifetime subscription to a vibe coded Go mess, with a shitty and hacky authenication method!
 
 So if you want to outsource talking to Mike or any other colleagues for that matter, **this** is the solution for you!
 
-Call now at +800-FUCK-MIKE!
+What are you waiting for?!
+
+Call now at +800-FUCKING-MIKE-AND-HIS-COOL-STORIES!
 
 ---
 
