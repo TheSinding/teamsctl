@@ -35,8 +35,9 @@ func Authenticate(parent context.Context, stdout io.Writer, options Options) err
 			return err
 		}
 	}
-	if _, err = os.Stat(executablePath); err != nil {
-		return fmt.Errorf("Chrome executable %q: %w", executablePath, err)
+	executablePath, err = resolveChromeExecutable(executablePath)
+	if err != nil {
+		return err
 	}
 	if err = os.MkdirAll(configDir, 0o700); err != nil {
 		return fmt.Errorf("create auth config directory: %w", err)
@@ -169,6 +170,49 @@ func Authenticate(parent context.Context, stdout io.Writer, options Options) err
 	fmt.Fprintln(stdout, "Saved chatsvcagg token.")
 	fmt.Fprintln(stdout, "Authentication complete.")
 	return nil
+}
+
+func resolveChromeExecutable(path string) (string, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", fmt.Errorf("Chrome executable %q: %w", path, err)
+	}
+	if !info.IsDir() {
+		if runtime.GOOS != "windows" && info.Mode().Perm()&0o111 == 0 {
+			return "", fmt.Errorf("Chrome executable %q is not executable", path)
+		}
+		return path, nil
+	}
+	if !strings.EqualFold(filepath.Ext(path), ".app") {
+		return "", fmt.Errorf("Chrome path %q is a directory; pass an executable or macOS app bundle", path)
+	}
+
+	binDir := filepath.Join(path, "Contents", "MacOS")
+	appName := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+	preferred := filepath.Join(binDir, appName)
+	if candidate, statErr := os.Stat(preferred); statErr == nil && !candidate.IsDir() && candidate.Mode().Perm()&0o111 != 0 {
+		return preferred, nil
+	}
+
+	entries, err := os.ReadDir(binDir)
+	if err != nil {
+		return "", fmt.Errorf("find executable in Chrome app %q: %w", path, err)
+	}
+	var executable string
+	for _, entry := range entries {
+		candidate, statErr := entry.Info()
+		if statErr != nil || candidate.IsDir() || candidate.Mode().Perm()&0o111 == 0 {
+			continue
+		}
+		if executable != "" {
+			return "", fmt.Errorf("Chrome app %q contains multiple executables; pass the executable in Contents/MacOS", path)
+		}
+		executable = filepath.Join(binDir, entry.Name())
+	}
+	if executable == "" {
+		return "", fmt.Errorf("Chrome app %q contains no executable in Contents/MacOS", path)
+	}
+	return executable, nil
 }
 
 func findChrome() (string, error) {
