@@ -16,6 +16,11 @@ import (
 // keyringService is the OS keyring service name under which tokens are stored.
 const keyringService = "teamsctl"
 
+type ClientTokens struct {
+	Skype      string
+	ChatSvcAgg string
+}
+
 func decodeAuthClaims(token string) (authClaims, error) {
 	parts := strings.Split(token, ".")
 	if len(parts) < 2 {
@@ -47,6 +52,22 @@ func CheckTokens() error {
 		}
 	}
 	return nil
+}
+
+func LoadClientTokens() (ClientTokens, error) {
+	configDir, err := authConfigDir()
+	if err != nil {
+		return ClientTokens{}, err
+	}
+	skype, err := loadAuthToken(configDir, authSkype)
+	if err != nil {
+		return ClientTokens{}, fmt.Errorf("%s token unavailable; run teamsctl auth: %w", authSkype, err)
+	}
+	chatSvcAgg, err := loadAuthToken(configDir, authChatSvcAgg)
+	if err != nil {
+		return ClientTokens{}, fmt.Errorf("%s token unavailable; run teamsctl auth: %w", authChatSvcAgg, err)
+	}
+	return ClientTokens{Skype: strings.TrimSpace(skype), ChatSvcAgg: strings.TrimSpace(chatSvcAgg)}, nil
 }
 
 func validateAuthToken(kind authTokenKind, token string, now time.Time) error {

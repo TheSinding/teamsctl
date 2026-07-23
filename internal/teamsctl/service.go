@@ -8,7 +8,10 @@ import (
 	teamsapi "github.com/fossteams/teams-api"
 	"github.com/fossteams/teams-api/pkg/csa"
 	"github.com/fossteams/teams-api/pkg/models"
+	"thesinding/teamsctl/internal/teamsauth"
 )
+
+var newTeamsAPIClient = teamsapi.NewWithTokens
 
 type Service struct {
 	client        *teamsapi.TeamsClient
@@ -20,7 +23,11 @@ type Service struct {
 }
 
 func NewService() (*Service, error) {
-	client, err := teamsapi.New()
+	tokens, err := teamsauth.LoadClientTokens()
+	if err != nil {
+		return nil, err
+	}
+	client, err := newTeamsAPIClient(tokens.Skype, tokens.ChatSvcAgg)
 	if err != nil {
 		return nil, fmt.Errorf("initialize Teams client: %w", err)
 	}
