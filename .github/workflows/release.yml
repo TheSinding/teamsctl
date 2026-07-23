@@ -81,6 +81,8 @@ jobs:
     name: Update Homebrew formula
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     concurrency:
       group: update-homebrew
       cancel-in-progress: false
