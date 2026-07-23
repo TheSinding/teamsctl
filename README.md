@@ -26,7 +26,7 @@ Huh! Wadda you say!? Does **that** not sound like a great fucking idea?
 
 For only **4.99$** you'll get a lifetime subscription to a vibe coded Go mess, with a shitty and hacky authenication method!
 
-**I HAVE PERSONALLY NOT REVIEWD A SINGLE FUCKING THING 💪**
+**I HAVE PERSONALLY NOT REVIEWED A SINGLE FUCKING THING 💪**
 
 > Me: "GPT5.6 Make this"
 
