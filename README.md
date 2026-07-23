@@ -38,7 +38,11 @@ So if you want to outsource talking to Mike or any other colleagues for that mat
 
 See **that's** how the modern day man does it! 🚀
 
+## Requirements
 
+- A Microsoft Teams account.
+- Google Chrome or another Chromium-based browser for authentication. Use `-chrome` or `CHROME_PATH` for Chromium, Helium, or a non-standard installation; macOS `.app` paths are accepted.
+- Go 1.18 or newer only when building from source. Homebrew and release installs use a prebuilt or Homebrew-managed binary.
 
 
 ## Install
