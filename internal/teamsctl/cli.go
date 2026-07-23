@@ -36,7 +36,7 @@ func Run(args []string, stdin io.Reader, stdout io.Writer) error {
 	case "mcp":
 		return RunMCP(stdin, stdout)
 	case "version", "--version", "-v":
-		fmt.Fprintln(stdout, version.Value)
+		_, _ = fmt.Fprintln(stdout, version.Value)
 		return nil
 	default:
 		return fmt.Errorf("unknown command %q; run teamsctl help", args[0])
@@ -44,7 +44,7 @@ func Run(args []string, stdin io.Reader, stdout io.Writer) error {
 }
 
 func printUsage(w io.Writer) {
-	fmt.Fprintln(w, `Usage:
+	_, _ = fmt.Fprintln(w, `Usage:
   teamsctl auth [flags]            Authenticate using Chrome
   teamsctl conversations           List chats and channels as JSON
   teamsctl messages [flags] ID     Get messages as JSON
