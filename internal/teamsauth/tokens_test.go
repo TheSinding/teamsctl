@@ -37,7 +37,7 @@ func TestAuthConfigDirIgnoresRelativeXDGConfigHome(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if filepath.Base(dir) != "teamsctl" || filepath.IsAbs(dir) == false {
+	if filepath.Base(dir) != "teamsctl" || !filepath.IsAbs(dir) {
 		t.Fatalf("expected fallback to home config dir, got %s", dir)
 	}
 	if filepath.Dir(dir) == "relative" {
