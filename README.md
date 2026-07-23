@@ -6,7 +6,7 @@ Have you ever thougth to yourself... 🤔
 
 or
 
-> "Holy hell, I fucking hate talking to Mike... Fucking Mike, with his cool stories and short arms - I wish I could make him speak to Claude or GPT or some chinese model."
+> "Holy hell, I fucking hate talking to Mike... Fucking Mike, with his cool stories and short arms - I wish I could make him speak to Claude or GPT or some chinese model"
 
 or
 
