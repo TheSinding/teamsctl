@@ -14,19 +14,23 @@ or
 
 ## WELL DO I HAVE THE SOLUTION FOR YOU! 🫵
 
-Now with **40%** more slop, and **20x** more bullshit and a **100% vibe coded codebase** from top to fucking bottom - **Now you can**!
+With **40%** more slop, and **20x** more bullshit and a **100% vibe coded codebase** from the top to the fucking bottom - **Now you absolutely can**!
 
-Introducing the **teamsctl** (_teams cuddle_ because it sounds cute).
+Introducing the all new **teamsctl** - pronounced _`teams cuddle (timz ˈkʌdəl)`_ because it just sounds SO cute.
 
 This allows you the ability to use teams from the commandline.. **BUT WAIT THERE IS MORE**
 
-For a limited time only, now you can use our new **MCP SERVER**! 🔌
+For a limited time only, you can use our new **MCP SERVER**! 🔌
 
 Huh! Wadda you say!? Does **that** not sound like a great fucking idea?
+
+What are you waiting for?!
 
 For only **4.99$** you'll get a lifetime subscription to a vibe coded Go mess, with a shitty and hacky authenication method!
 
 So if you want to outsource talking to Mike or any other colleagues for that matter, **this** is the solution for you!
+
+Call now at +800-FUCK-MIKE!
 
 ---
 
