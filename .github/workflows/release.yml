@@ -110,6 +110,7 @@ jobs:
       - name: Update teamsctl formula
         if: steps.latest.outputs.current == 'true'
         env:
+          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ github.ref_name }}
         run: |
           source_url="https://github.com/TheSinding/teamsctl/archive/refs/tags/${VERSION}.tar.gz"
@@ -135,6 +136,12 @@ jobs:
 
           grep -Fxq "  url \"${source_url}\"" Formula/teamsctl.rb
           grep -Fxq "  sha256 \"${checksum}\"" Formula/teamsctl.rb
+
+          latest=$(gh api repos/TheSinding/teamsctl/releases/latest --jq '.tag_name')
+          if [[ "$latest" != "$VERSION" ]]; then
+            echo "Skipping ${VERSION}; latest release is now ${latest}."
+            exit 0
+          fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
