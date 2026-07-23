@@ -10,7 +10,7 @@ or
 
 or
 
-> "It's a super duper great idea to have an LLM use my name in team"
+> "It's a super duper great idea to have an LLM use my name in teams"
 
 ## WELL DO I HAVE THE SOLUTION FOR YOU! 🫵
 
