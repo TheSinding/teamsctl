@@ -121,7 +121,7 @@ Examples:
 teamsctl conversations | jq '.[] | select(.kind == "chat")'
 teamsctl messages -limit 10 '19:conversation-id@thread.v2'
 printf 'hello world' | teamsctl send '19:conversation-id@thread.v2'
-teamsctl send -format html '19:conversation-id@thread.v2' '<strong>Hello Mike, I totally like speaking to you! What a great and fun colleague you are.</strong>'
+teamsctl send -format html '19:conversation-id@thread.v2' '<strong>Hello Mike, I totally like speaking to you! What a great and fun colleague you are and I like your cool stories, 4 realzies.</strong>'
 teamsctl send -mention Mike '19:conversation-id@thread.v2' 'Hello @Mike'
 ```
 
