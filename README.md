@@ -122,7 +122,7 @@ teamsctl conversations | jq '.[] | select(.kind == "chat")'
 teamsctl messages -limit 10 '19:conversation-id@thread.v2'
 printf 'hello world' | teamsctl send '19:conversation-id@thread.v2'
 teamsctl send -format html '19:conversation-id@thread.v2' '<strong>Hello</strong>'
-teamsctl send -mention Mikkel '19:conversation-id@thread.v2' 'Hello @Mikkel'
+teamsctl send -mention Mike '19:conversation-id@thread.v2' 'Hello @Mike'
 ```
 
 ## MCP
@@ -138,8 +138,8 @@ call. Run `teamsctl auth` when connection fails with an authentication error.
 | `send_message` | Send plain text or HTML, with optional real Teams mentions. |
 
 Use `format: "html"` for formatted or multi-part messages. HTML such as
-`<strong>@Mikkel</strong>` is only bold text: a real mention also requires
-`"mentions": ["Mikkel"]`. Unlisted `@` text remains plain text.
+`<strong>@Mike</strong>` is only bold text: a real mention also requires
+`"mentions": ["Mike"]`. Unlisted `@` text remains plain text.
 
 Advanced consumers can bypass name/email lookup with `mention_entities`, using
 `display_name` plus `mri` or `object_id`.
