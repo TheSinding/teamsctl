@@ -56,6 +56,13 @@ func TestMCPInitializeRejectsExpiredAuth(t *testing.T) {
 	}
 }
 
+func TestLatestMessageRequiresQuery(t *testing.T) {
+	_, _, err := (&mcpApplication{}).latestMessage(context.Background(), nil, latestMessageInput{Query: " "})
+	if err == nil || !strings.Contains(err.Error(), "query is required") {
+		t.Fatalf("latestMessage() error = %v", err)
+	}
+}
+
 func connectMCP(t *testing.T) (*mcp.ClientSession, func()) {
 	t.Helper()
 	clientTransport, serverTransport := mcp.NewInMemoryTransports()

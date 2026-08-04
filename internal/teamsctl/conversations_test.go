@@ -18,8 +18,21 @@ func TestConversationTargetTreatsNamesAndIDsDifferently(t *testing.T) {
 	if looksLikeConversationID("Mikkel") {
 		t.Fatal("name was treated as an ID")
 	}
+	if looksLikeConversationID("mikkel@example.com") {
+		t.Fatal("email was treated as an ID")
+	}
 	if !looksLikeConversationID("19:conversation-id@thread.v2") {
 		t.Fatal("Teams conversation ID was treated as a name")
+	}
+}
+
+func TestLimitOrDefault(t *testing.T) {
+	if got := limitOrDefault(nil); got != 50 {
+		t.Fatalf("limitOrDefault(nil) = %d", got)
+	}
+	all := 0
+	if got := limitOrDefault(&all); got != 0 {
+		t.Fatalf("limitOrDefault(0) = %d", got)
 	}
 }
 

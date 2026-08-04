@@ -18,7 +18,7 @@ var checkMCPAuth = teamsauth.CheckTokens
 type listConversationsInput struct {
 	Query string `json:"query,omitempty" jsonschema:"Case-insensitive title or team-name substring."`
 	Kind  string `json:"kind,omitempty" jsonschema:"Conversation kind: chat or channel."`
-	Limit int    `json:"limit,omitempty" jsonschema:"Maximum number of conversations to return; zero returns all."`
+	Limit *int   `json:"limit,omitempty" jsonschema:"Maximum number of conversations to return. Omit for 50; use zero for all."`
 }
 
 type latestMessageInput struct {
@@ -28,7 +28,7 @@ type latestMessageInput struct {
 type messagesInput struct {
 	Recipient      string `json:"recipient,omitempty" jsonschema:"Recipient phrase from the user, such as Mike, Mike and Charlie, ASM group chat, or ASM channel."`
 	ConversationID string `json:"conversation_id,omitempty" jsonschema:"Deprecated: use recipient. A Teams conversation ID remains accepted."`
-	Limit          int    `json:"limit,omitempty" jsonschema:"Maximum number of messages to return; zero returns all."`
+	Limit          *int   `json:"limit,omitempty" jsonschema:"Maximum number of messages to return. Omit for 50; use zero for all."`
 }
 
 type sendMessageInput struct {
@@ -99,11 +99,14 @@ func (app *mcpApplication) listConversations(_ context.Context, _ *mcp.CallToolR
 	if err != nil {
 		return nil, nil, err
 	}
-	conversations, err := service.FindConversations(input.Query, input.Kind, input.Limit)
+	conversations, err := service.FindConversations(input.Query, input.Kind, limitOrDefault(input.Limit))
 	return nil, conversations, err
 }
 
 func (app *mcpApplication) latestMessage(_ context.Context, _ *mcp.CallToolRequest, input latestMessageInput) (*mcp.CallToolResult, any, error) {
+	if strings.TrimSpace(input.Query) == "" {
+		return nil, nil, fmt.Errorf("query is required")
+	}
 	service, err := app.serviceForTool()
 	if err != nil {
 		return nil, nil, err
@@ -132,7 +135,7 @@ func (app *mcpApplication) messages(_ context.Context, _ *mcp.CallToolRequest, i
 	if err != nil {
 		return nil, nil, err
 	}
-	messages, err := service.Messages(target.IDs, target.Name, input.Limit)
+	messages, err := service.Messages(target.IDs, target.Name, limitOrDefault(input.Limit))
 	return nil, messages, err
 }
 
@@ -284,7 +287,23 @@ func matchingGroupConversation(conversations []Conversation, recipients []string
 }
 
 func looksLikeConversationID(target string) bool {
-	return strings.ContainsAny(target, ":@,")
+	ids := splitIDs(target)
+	if len(ids) == 0 {
+		return false
+	}
+	for _, id := range ids {
+		if !strings.HasPrefix(id, "19:") && !strings.HasPrefix(id, "48:") {
+			return false
+		}
+	}
+	return true
+}
+
+func limitOrDefault(limit *int) int {
+	if limit == nil {
+		return 50
+	}
+	return *limit
 }
 
 func splitRecipientNames(target string) []string {
