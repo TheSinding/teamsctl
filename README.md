@@ -134,8 +134,13 @@ call. Run `teamsctl auth` when connection fails with an authentication error.
 |---|---|
 | `list_conversations` | Find chats/channels by `query`, `kind`, and `limit`. Results are cached for five minutes. |
 | `get_latest_message` | Resolve the best matching one-to-one chat and return its latest message. |
-| `get_messages` | Read messages using a conversation ID. |
-| `send_message` | Send plain text or HTML, with optional real Teams mentions. |
+| `get_messages` | Read messages using a recipient phrase. |
+| `send_message` | Send plain text or HTML, with optional real Teams mentions, using a recipient phrase. |
+
+Recipient phrases resolve by intent: `Mike` is a 1:1 chat, `Mike and Charlie`
+is their existing group chat, and `ASM group chat` or `ASM channel` matches a
+named conversation. If a requested multi-person group does not exist,
+`send_message` sends to each person individually and reports the fallback.
 
 Use `format: "html"` for formatted or multi-part messages. HTML such as
 `<strong>@Mikkel</strong>` is only bold text: a real mention also requires
