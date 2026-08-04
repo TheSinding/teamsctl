@@ -69,7 +69,7 @@ func connectMCP(t *testing.T) (*mcp.ClientSession, func()) {
 		t.Fatal(err)
 	}
 	return clientSession, func() {
-		clientSession.Close()
-		serverSession.Wait()
+		_ = clientSession.Close()
+		_ = serverSession.Wait()
 	}
 }
