@@ -1,9 +1,6 @@
 package teamsctl
 
-import (
-	"encoding/json"
-	"time"
-)
+import "time"
 
 type Conversation struct {
 	Kind      string   `json:"kind"`
@@ -51,33 +48,4 @@ type mentionWire struct {
 type mentionResolution struct {
 	Query string
 	Wire  mentionWire
-}
-
-type rpcRequest struct {
-	JSONRPC string          `json:"jsonrpc"`
-	ID      json.RawMessage `json:"id,omitempty"`
-	Method  string          `json:"method"`
-	Params  json.RawMessage `json:"params,omitempty"`
-}
-
-type rpcResponse struct {
-	JSONRPC string          `json:"jsonrpc"`
-	ID      json.RawMessage `json:"id"`
-	Result  interface{}     `json:"result,omitempty"`
-	Error   *rpcError       `json:"error,omitempty"`
-}
-
-type rpcError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-type toolContent struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
-}
-
-type toolResult struct {
-	Content []toolContent `json:"content"`
-	IsError bool          `json:"isError,omitempty"`
 }

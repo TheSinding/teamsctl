@@ -1,33 +1,39 @@
 package teamsctl
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"errors"
 	"strings"
 	"testing"
+
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func TestMCPHandshake(t *testing.T) {
+func TestMCPListsTypedTools(t *testing.T) {
 	originalCheck := checkMCPAuth
 	checkMCPAuth = func() error { return nil }
 	defer func() { checkMCPAuth = originalCheck }()
-	input := strings.NewReader(
-		`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26"}}` + "\n" +
-			`{"jsonrpc":"2.0","method":"notifications/initialized"}` + "\n",
-	)
-	var output bytes.Buffer
-	if err := RunMCP(input, &output); err != nil {
+
+	session, closeSession := connectMCP(t)
+	defer closeSession()
+	result, err := session.ListTools(context.Background(), nil)
+	if err != nil {
 		t.Fatal(err)
 	}
-	decoder := json.NewDecoder(&output)
-	var initialize map[string]interface{}
-	if err := decoder.Decode(&initialize); err != nil {
-		t.Fatal(err)
+	if len(result.Tools) != 4 {
+		t.Fatalf("tools count = %d", len(result.Tools))
 	}
-	result := initialize["result"].(map[string]interface{})
-	if result["protocolVersion"] != "2025-03-26" {
-		t.Fatalf("protocolVersion = %v", result["protocolVersion"])
+	tools := make(map[string]*mcp.Tool, len(result.Tools))
+	for _, tool := range result.Tools {
+		tools[tool.Name] = tool
+	}
+	for _, name := range []string{"list_conversations", "get_latest_message", "get_messages", "send_message"} {
+		if tools[name] == nil || tools[name].InputSchema == nil {
+			t.Errorf("tool %q was not described with an input schema", name)
+		}
+	}
+	if !strings.Contains(tools["send_message"].Description, "send individually") {
+		t.Fatalf("send_message description = %q", tools["send_message"].Description)
 	}
 }
 
@@ -36,18 +42,41 @@ func TestMCPInitializeRejectsExpiredAuth(t *testing.T) {
 	checkMCPAuth = func() error { return errors.New("teams token expired; run teamsctl auth") }
 	defer func() { checkMCPAuth = originalCheck }()
 
-	input := strings.NewReader(`{"jsonrpc":"2.0","id":1,"method":"initialize"}`)
-	var output bytes.Buffer
-	if err := RunMCP(input, &output); err != nil {
+	session, closeSession := connectMCP(t)
+	defer closeSession()
+	result, err := session.CallTool(context.Background(), &mcp.CallToolParams{
+		Name:      "get_latest_message",
+		Arguments: map[string]any{"query": "Mikkel"},
+	})
+	if err != nil {
 		t.Fatal(err)
 	}
-	var response struct {
-		Error *rpcError `json:"error"`
+	if !result.IsError || !strings.Contains(result.Content[0].(*mcp.TextContent).Text, "teams token expired") {
+		t.Fatalf("CallTool() = %#v", result)
 	}
-	if err := json.Unmarshal(output.Bytes(), &response); err != nil {
+}
+
+func TestLatestMessageRequiresQuery(t *testing.T) {
+	_, _, err := (&mcpApplication{}).latestMessage(context.Background(), nil, latestMessageInput{Query: " "})
+	if err == nil || !strings.Contains(err.Error(), "query is required") {
+		t.Fatalf("latestMessage() error = %v", err)
+	}
+}
+
+func connectMCP(t *testing.T) (*mcp.ClientSession, func()) {
+	t.Helper()
+	clientTransport, serverTransport := mcp.NewInMemoryTransports()
+	serverSession, err := newMCPServer().Connect(context.Background(), serverTransport, nil)
+	if err != nil {
 		t.Fatal(err)
 	}
-	if response.Error == nil || response.Error.Code != -32001 {
-		t.Fatalf("unexpected response: %s", output.String())
+	client := mcp.NewClient(&mcp.Implementation{Name: "teamsctl-test"}, nil)
+	clientSession, err := client.Connect(context.Background(), clientTransport, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return clientSession, func() {
+		_ = clientSession.Close()
+		_ = serverSession.Wait()
 	}
 }
