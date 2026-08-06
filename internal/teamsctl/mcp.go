@@ -9,8 +9,9 @@ import (
 	"sync"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"thesinding/teamsctl/internal/teamsauth"
 	"thesinding/teamsctl/internal/version"
+	"thesinding/teamsctl/pkg/teamsauth"
+	tctl "thesinding/teamsctl/pkg/teamsctl"
 )
 
 var checkMCPAuth = teamsauth.CheckTokens
@@ -32,17 +33,17 @@ type messagesInput struct {
 }
 
 type sendMessageInput struct {
-	Recipient       string          `json:"recipient,omitempty" jsonschema:"Recipient phrase from the user, such as Mike, Mike and Charlie, ASM group chat, or ASM channel."`
-	ConversationID  string          `json:"conversation_id,omitempty" jsonschema:"Deprecated: use recipient. A Teams conversation ID remains accepted."`
-	Message         string          `json:"message" jsonschema:"Message content."`
-	Format          string          `json:"format,omitempty" jsonschema:"Message format: text or html. Use html for structured or formatted messages."`
-	Mentions        []string        `json:"mentions,omitempty" jsonschema:"People to mention. Each must match an @Name token in message."`
-	MentionEntities []MentionEntity `json:"mention_entities,omitempty" jsonschema:"Pre-resolved Teams mentions. Prefer mentions for automatic resolution."`
+	Recipient       string               `json:"recipient,omitempty" jsonschema:"Recipient phrase from the user, such as Mike, Mike and Charlie, ASM group chat, or ASM channel."`
+	ConversationID  string               `json:"conversation_id,omitempty" jsonschema:"Deprecated: use recipient. A Teams conversation ID remains accepted."`
+	Message         string               `json:"message" jsonschema:"Message content."`
+	Format          string               `json:"format,omitempty" jsonschema:"Message format: text or html. Use html for structured or formatted messages."`
+	Mentions        []string             `json:"mentions,omitempty" jsonschema:"People to mention. Each must match an @Name token in message."`
+	MentionEntities []tctl.MentionEntity `json:"mention_entities,omitempty" jsonschema:"Pre-resolved Teams mentions. Prefer mentions for automatic resolution."`
 }
 
 type mcpApplication struct {
 	serviceMu sync.Mutex
-	service   *Service
+	service   *tctl.Service
 }
 
 func RunMCP(stdin io.Reader, stdout io.Writer) error {
@@ -78,14 +79,14 @@ func newMCPServer() *mcp.Server {
 	return server
 }
 
-func (app *mcpApplication) serviceForTool() (*Service, error) {
+func (app *mcpApplication) serviceForTool() (*tctl.Service, error) {
 	if err := checkMCPAuth(); err != nil {
 		return nil, err
 	}
 	app.serviceMu.Lock()
 	defer app.serviceMu.Unlock()
 	if app.service == nil {
-		service, err := NewService()
+		service, err := tctl.NewService()
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +112,7 @@ func (app *mcpApplication) latestMessage(_ context.Context, _ *mcp.CallToolReque
 	if err != nil {
 		return nil, nil, err
 	}
-	conversation, err := service.findOneOnOneConversation(input.Query)
+	conversation, err := service.FindOneOnOneConversation(input.Query)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -131,7 +132,7 @@ func (app *mcpApplication) messages(_ context.Context, _ *mcp.CallToolRequest, i
 	if err != nil {
 		return nil, nil, err
 	}
-	target, err := service.resolveConversationTarget(firstNonEmpty(input.Recipient, input.ConversationID))
+	target, err := service.ResolveConversationTarget(firstNonEmpty(input.Recipient, input.ConversationID))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -144,19 +145,19 @@ func (app *mcpApplication) sendMessage(_ context.Context, _ *mcp.CallToolRequest
 	if err != nil {
 		return nil, nil, err
 	}
-	target, err := service.resolveConversationTarget(firstNonEmpty(input.Recipient, input.ConversationID))
+	target, err := service.ResolveConversationTarget(firstNonEmpty(input.Recipient, input.ConversationID))
 	if err != nil {
-		var missingGroup *missingGroupChatError
+		var missingGroup *tctl.MissingGroupChatError
 		if !errors.As(err, &missingGroup) {
 			return nil, nil, err
 		}
-		target, err = service.resolveIndividualTargets(missingGroup.Recipients)
+		target, err = service.ResolveIndividualTargets(missingGroup.Recipients)
 		if err != nil {
 			return nil, nil, err
 		}
 		target.FallbackToOneOnOne = true
 	}
-	options := SendOptions{Format: input.Format, Mentions: input.Mentions, MentionEntities: input.MentionEntities}
+	options := tctl.SendOptions{Format: input.Format, Mentions: input.Mentions, MentionEntities: input.MentionEntities}
 	if target.FallbackToOneOnOne {
 		for _, ids := range target.IndividualIDs {
 			if err := service.Send(ids, input.Message, options); err != nil {
@@ -169,162 +170,11 @@ func (app *mcpApplication) sendMessage(_ context.Context, _ *mcp.CallToolRequest
 	return nil, map[string]any{"sent": true, "sent_to": target.Recipients, "fallback_to_one_on_one": target.FallbackToOneOnOne}, nil
 }
 
-type conversationTarget struct {
-	IDs                []string
-	IndividualIDs      [][]string
-	Name               string
-	Recipients         []string
-	FallbackToOneOnOne bool
-}
-
-type missingGroupChatError struct{ Recipients []string }
-
-func (e *missingGroupChatError) Error() string {
-	return fmt.Sprintf("no group chat found for %s", strings.Join(e.Recipients, " and "))
-}
-
-func (s *Service) resolveConversationTarget(target string) (conversationTarget, error) {
-	target = strings.TrimSpace(target)
-	if target == "" {
-		return conversationTarget{}, fmt.Errorf("recipient is required")
-	}
-	if looksLikeConversationID(target) {
-		return conversationTarget{IDs: splitIDs(target), Recipients: []string{target}}, nil
-	}
-	if recipients := splitRecipientNames(target); len(recipients) > 1 {
-		conversation, err := s.findGroupConversation(recipients)
-		if err != nil {
-			return conversationTarget{}, err
-		}
-		if len(conversation.IDs) == 0 {
-			return conversationTarget{}, &missingGroupChatError{Recipients: recipients}
-		}
-		return conversationTarget{IDs: conversation.IDs, Name: conversation.Title, Recipients: []string{conversation.Title}}, nil
-	}
-	if query, kind := namedConversationQuery(target); kind != "" {
-		conversation, err := s.findNamedConversation(query, kind)
-		if err != nil {
-			return conversationTarget{}, err
-		}
-		return conversationTarget{IDs: conversation.IDs, Name: conversation.Title, Recipients: []string{conversation.Title}}, nil
-	}
-	conversation, err := s.findOneOnOneConversation(target)
-	if err != nil {
-		return conversationTarget{}, err
-	}
-	return conversationTarget{IDs: conversation.IDs, Name: conversation.Title, Recipients: []string{conversation.Title}}, nil
-}
-
-func (s *Service) resolveIndividualTargets(recipients []string) (conversationTarget, error) {
-	individualIDs := make([][]string, 0, len(recipients))
-	resolved := make([]string, 0, len(recipients))
-	for _, recipient := range recipients {
-		conversation, err := s.findOneOnOneConversation(recipient)
-		if err != nil {
-			return conversationTarget{}, err
-		}
-		individualIDs = append(individualIDs, conversation.IDs)
-		resolved = append(resolved, conversation.Title)
-	}
-	return conversationTarget{IndividualIDs: individualIDs, Recipients: resolved}, nil
-}
-
-func (s *Service) findOneOnOneConversation(query string) (Conversation, error) {
-	matches, err := s.FindConversations(query, "chat", 0)
-	if err != nil {
-		return Conversation{}, err
-	}
-	for _, conversation := range matches {
-		if conversation.OneOnOne {
-			return conversation, nil
-		}
-	}
-	return Conversation{}, fmt.Errorf("no one-to-one chat found matching %q", query)
-}
-
-func (s *Service) findGroupConversation(recipients []string) (Conversation, error) {
-	conversations, err := s.Conversations()
-	if err != nil {
-		return Conversation{}, err
-	}
-	if conversation, ok := matchingGroupConversation(conversations, recipients); ok {
-		return conversation, nil
-	}
-	return Conversation{}, nil
-}
-
-func (s *Service) findNamedConversation(query, kind string) (Conversation, error) {
-	conversations, err := s.FindConversations(query, kind, 0)
-	if err != nil {
-		return Conversation{}, err
-	}
-	for _, conversation := range conversations {
-		if kind != "chat" || !conversation.OneOnOne {
-			return conversation, nil
-		}
-	}
-	return Conversation{}, fmt.Errorf("no %s found matching %q", kind, query)
-}
-
-func matchingGroupConversation(conversations []Conversation, recipients []string) (Conversation, bool) {
-	for _, conversation := range conversations {
-		if conversation.Kind != "chat" || conversation.OneOnOne {
-			continue
-		}
-		title := strings.ToLower(conversation.Title)
-		matched := true
-		for _, recipient := range recipients {
-			if !strings.Contains(title, strings.ToLower(recipient)) {
-				matched = false
-				break
-			}
-		}
-		if matched {
-			return conversation, true
-		}
-	}
-	return Conversation{}, false
-}
-
-func looksLikeConversationID(target string) bool {
-	ids := splitIDs(target)
-	if len(ids) == 0 {
-		return false
-	}
-	for _, id := range ids {
-		if !strings.HasPrefix(id, "19:") && !strings.HasPrefix(id, "48:") {
-			return false
-		}
-	}
-	return true
-}
-
 func limitOrDefault(limit *int) int {
 	if limit == nil {
 		return 50
 	}
 	return *limit
-}
-
-func splitRecipientNames(target string) []string {
-	parts := strings.Split(strings.TrimSpace(target), " and ")
-	if len(parts) < 2 {
-		return nil
-	}
-	return normalizeIDs(parts)
-}
-
-func namedConversationQuery(target string) (string, string) {
-	lower := strings.ToLower(strings.TrimSpace(target))
-	for _, suffix := range []struct {
-		value string
-		kind  string
-	}{{" group chat", "chat"}, {" chat", "chat"}, {" channel", "channel"}} {
-		if strings.HasSuffix(lower, suffix.value) {
-			return strings.TrimSpace(target[:len(target)-len(suffix.value)]), suffix.kind
-		}
-	}
-	return "", ""
 }
 
 func firstNonEmpty(values ...string) string {
