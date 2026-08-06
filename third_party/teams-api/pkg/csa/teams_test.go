@@ -2,8 +2,8 @@ package csa_test
 
 import (
 	"fmt"
-	"github.com/fossteams/teams-api/pkg"
-	"github.com/fossteams/teams-api/pkg/csa"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/csa"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

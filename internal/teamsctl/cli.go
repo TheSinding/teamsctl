@@ -7,9 +7,9 @@ import (
 	"io"
 	"strings"
 
-	"thesinding/teamsctl/internal/version"
-	"thesinding/teamsctl/pkg/teamsauth"
-	tctl "thesinding/teamsctl/pkg/teamsctl"
+	"github.com/TheSinding/teamsctl/internal/version"
+	"github.com/TheSinding/teamsctl/pkg/teamsauth"
+	tctl "github.com/TheSinding/teamsctl/pkg/teamsctl"
 )
 
 type stringFlags []string

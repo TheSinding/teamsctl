@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	teamsapi "github.com/fossteams/teams-api"
-	"github.com/fossteams/teams-api/pkg/csa"
-	"github.com/fossteams/teams-api/pkg/models"
+	teamsapi "github.com/TheSinding/teamsctl/third_party/teams-api"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/csa"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
 )
 
 func (s *Service) Conversations() ([]Conversation, error) {

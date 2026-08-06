@@ -8,10 +8,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/TheSinding/teamsctl/internal/version"
+	"github.com/TheSinding/teamsctl/pkg/teamsauth"
+	tctl "github.com/TheSinding/teamsctl/pkg/teamsctl"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"thesinding/teamsctl/internal/version"
-	"thesinding/teamsctl/pkg/teamsauth"
-	tctl "thesinding/teamsctl/pkg/teamsctl"
 )
 
 var checkMCPAuth = teamsauth.CheckTokens

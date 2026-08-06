@@ -3,8 +3,8 @@ package csa
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fossteams/teams-api/pkg/errors"
-	"github.com/fossteams/teams-api/pkg/util"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/errors"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/util"
 	"io"
 	"net/http"
 	"net/url"

@@ -3,8 +3,8 @@ package teamsctl
 import (
 	"testing"
 
-	"github.com/fossteams/teams-api/pkg/csa"
-	"github.com/fossteams/teams-api/pkg/models"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/csa"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
 )
 
 func TestFormatMessageHTMLEscapesInput(t *testing.T) {

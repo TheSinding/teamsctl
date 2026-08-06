@@ -1,7 +1,7 @@
 package mt
 
 import (
-	api "github.com/fossteams/teams-api/pkg"
+	api "github.com/TheSinding/teamsctl/third_party/teams-api/pkg"
 	"io"
 	"net/http"
 	"net/url"

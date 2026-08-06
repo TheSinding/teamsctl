@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"thesinding/teamsctl/internal/teamsctl"
+	"github.com/TheSinding/teamsctl/internal/teamsctl"
 )
 
 func main() {

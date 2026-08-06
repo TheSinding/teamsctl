@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fossteams/teams-api/pkg/errors"
-	"github.com/fossteams/teams-api/pkg/models"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/errors"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
 	"io"
 	"net/http"
 	"net/url"

@@ -1,4 +1,4 @@
-module github.com/fossteams/teams-api
+module github.com/TheSinding/teamsctl/third_party/teams-api
 
 go 1.16
 

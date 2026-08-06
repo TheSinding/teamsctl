@@ -3,7 +3,7 @@ package csa_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fossteams/teams-api/pkg/csa"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/csa"
 	"os"
 	"testing"
 )

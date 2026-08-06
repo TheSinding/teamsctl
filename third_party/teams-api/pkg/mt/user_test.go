@@ -3,9 +3,9 @@ package mt_test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fossteams/teams-api/pkg"
-	"github.com/fossteams/teams-api/pkg/models"
-	"github.com/fossteams/teams-api/pkg/mt"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/mt"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"

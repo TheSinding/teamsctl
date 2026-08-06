@@ -1,18 +1,18 @@
-module thesinding/teamsctl
+module github.com/TheSinding/teamsctl
 
 go 1.26
 
 toolchain go1.26.5
 
 require (
+	github.com/TheSinding/teamsctl/third_party/teams-api v0.0.0-20220604181459-dbbdc3681f32
 	github.com/chromedp/cdproto v0.0.0-20241003230502-a4a8f7c660df
 	github.com/chromedp/chromedp v0.10.1
-	github.com/fossteams/teams-api v0.0.0-20220604181459-dbbdc3681f32
 	github.com/modelcontextprotocol/go-sdk v1.7.0
 	github.com/zalando/go-keyring v0.2.8
 )
 
-replace github.com/fossteams/teams-api => ./third_party/teams-api
+replace github.com/TheSinding/teamsctl/third_party/teams-api => ./third_party/teams-api
 
 require (
 	github.com/chromedp/sysutil v1.0.0 // indirect

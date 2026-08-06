@@ -3,7 +3,7 @@ package mt
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/fossteams/teams-api/pkg/models"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

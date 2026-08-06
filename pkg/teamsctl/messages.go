@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fossteams/teams-api/pkg/csa"
-	"github.com/fossteams/teams-api/pkg/models"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/csa"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
 )
 
 func (s *Service) Messages(ids []string, displayName string, limit int) ([]Message, error) {

@@ -3,9 +3,9 @@ package csa
 import (
 	"encoding/json"
 	"fmt"
-	api "github.com/fossteams/teams-api/pkg"
-	"github.com/fossteams/teams-api/pkg/errors"
-	"github.com/fossteams/teams-api/pkg/util"
+	api "github.com/TheSinding/teamsctl/third_party/teams-api/pkg"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/errors"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/util"
 	"net/http"
 	"net/url"
 	"sort"

@@ -3,7 +3,7 @@ package teamsctl
 import (
 	"testing"
 
-	teamsapi "github.com/fossteams/teams-api"
+	teamsapi "github.com/TheSinding/teamsctl/third_party/teams-api"
 	"github.com/zalando/go-keyring"
 )
 

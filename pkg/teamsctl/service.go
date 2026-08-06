@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	teamsapi "github.com/fossteams/teams-api"
-	"github.com/fossteams/teams-api/pkg/csa"
-	"github.com/fossteams/teams-api/pkg/models"
-	"thesinding/teamsctl/pkg/teamsauth"
+	"github.com/TheSinding/teamsctl/pkg/teamsauth"
+	teamsapi "github.com/TheSinding/teamsctl/third_party/teams-api"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/csa"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/models"
 )
 
 var newTeamsAPIClient = teamsapi.NewWithTokens

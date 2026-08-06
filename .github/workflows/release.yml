@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "*"
+      - "v*"
 
 permissions:
   contents: write
@@ -43,7 +43,7 @@ jobs:
           extension=""
           if [[ "$GOOS" == "windows" ]]; then extension=".exe"; fi
           go build -trimpath \
-            -ldflags "-s -w -X thesinding/teamsctl/internal/version.Value=$VERSION" \
+            -ldflags "-s -w -X github.com/TheSinding/teamsctl/internal/version.Value=$VERSION" \
             -o "dist/teamsctl${extension}" ./cmd/teamsctl
 
           archive="teamsctl-${VERSION}-${GOOS}-${GOARCH}"

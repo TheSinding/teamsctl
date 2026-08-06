@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/TheSinding/teamsctl/third_party/teams-api/pkg/errors"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/fossteams/teams-api/pkg/errors"
 	"io"
 	"net/http"
 	"reflect"
