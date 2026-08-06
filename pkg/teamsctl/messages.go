@@ -58,7 +58,10 @@ func messageRecords(messages []csa.ChatMessage, me *models.User) []Message {
 // isSelfSender reports whether from is the signed-in account's MRI. Teams
 // leaves ImDisplayName empty on your own messages, so callers use this to
 // backfill the author. The MRI is matched directly, or derived from ObjectId
-// when the profile did not return one.
+// when the profile did not return one. from is sometimes the bare MRI and
+// sometimes a full contact URL ending in it
+// (".../users/ME/contacts/8:orgid:<guid>"), so this matches on suffix rather
+// than equality.
 func isSelfSender(from string, me *models.User) bool {
 	if me == nil {
 		return false
@@ -67,8 +70,8 @@ func isSelfSender(from string, me *models.User) bool {
 	if from == "" {
 		return false
 	}
-	if me.Mri != "" && from == strings.TrimSpace(me.Mri) {
+	if mri := strings.TrimSpace(me.Mri); mri != "" && strings.HasSuffix(from, mri) {
 		return true
 	}
-	return me.ObjectId != "" && from == "8:orgid:"+strings.TrimSpace(me.ObjectId)
+	return me.ObjectId != "" && strings.HasSuffix(from, "8:orgid:"+strings.TrimSpace(me.ObjectId))
 }

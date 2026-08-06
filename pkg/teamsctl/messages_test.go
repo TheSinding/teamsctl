@@ -30,6 +30,17 @@ func TestIsSelfSenderDerivesMRIFromObjectID(t *testing.T) {
 	}
 }
 
+func TestIsSelfSenderMatchesFullContactURL(t *testing.T) {
+	me := &models.User{Mri: "8:orgid:me"}
+	from := "https://emea.ng.msg.teams.microsoft.com/v1/users/ME/contacts/8:orgid:me"
+	if !isSelfSender(from, me) {
+		t.Fatal("a full contact URL ending in the MRI should be self")
+	}
+	if isSelfSender("https://emea.ng.msg.teams.microsoft.com/v1/users/ME/contacts/8:orgid:someone-else", me) {
+		t.Fatal("a contact URL for a different MRI should not be self")
+	}
+}
+
 func TestMessageRecordsBackfillsSelfAuthor(t *testing.T) {
 	me := &models.User{DisplayName: "Simon Sinding", Mri: "8:orgid:me"}
 	messages := []csa.ChatMessage{
