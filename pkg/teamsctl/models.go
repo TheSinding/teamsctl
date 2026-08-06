@@ -17,6 +17,7 @@ type Message struct {
 	ID             string    `json:"id"`
 	ConversationID string    `json:"conversation_id"`
 	Author         string    `json:"author"`
+	SenderID       string    `json:"sender_id"`
 	Content        string    `json:"content"`
 	ContentType    string    `json:"content_type"`
 	MessageType    string    `json:"message_type"`

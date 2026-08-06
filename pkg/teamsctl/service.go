@@ -8,7 +8,7 @@ import (
 	teamsapi "github.com/fossteams/teams-api"
 	"github.com/fossteams/teams-api/pkg/csa"
 	"github.com/fossteams/teams-api/pkg/models"
-	"thesinding/teamsctl/internal/teamsauth"
+	"thesinding/teamsctl/pkg/teamsauth"
 )
 
 var newTeamsAPIClient = teamsapi.NewWithTokens
@@ -32,4 +32,20 @@ func NewService() (*Service, error) {
 		return nil, fmt.Errorf("initialize Teams client: %w", err)
 	}
 	return &Service{client: client}, nil
+}
+
+// currentUser returns the signed-in account, fetching it on first use and
+// caching it alongside the conversation state. It returns nil when the
+// identity cannot be fetched, so callers may treat it as best-effort.
+func (s *Service) currentUser() *models.User {
+	s.cacheMu.Lock()
+	defer s.cacheMu.Unlock()
+	if s.me == nil {
+		me, err := s.client.GetMe()
+		if err != nil {
+			return nil
+		}
+		s.me = me
+	}
+	return s.me
 }

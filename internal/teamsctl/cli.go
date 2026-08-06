@@ -7,8 +7,9 @@ import (
 	"io"
 	"strings"
 
-	"thesinding/teamsctl/internal/teamsauth"
 	"thesinding/teamsctl/internal/version"
+	"thesinding/teamsctl/pkg/teamsauth"
+	tctl "thesinding/teamsctl/pkg/teamsctl"
 )
 
 type stringFlags []string
@@ -73,7 +74,7 @@ func runConversations(args []string, stdout io.Writer) error {
 	if flags.NArg() != 0 {
 		return fmt.Errorf("conversations takes no arguments")
 	}
-	service, err := NewService()
+	service, err := tctl.NewService()
 	if err != nil {
 		return err
 	}
@@ -98,11 +99,11 @@ func runMessages(args []string, stdout io.Writer) error {
 	if *limit < 0 {
 		return fmt.Errorf("limit must be at least 0")
 	}
-	service, err := NewService()
+	service, err := tctl.NewService()
 	if err != nil {
 		return err
 	}
-	messages, err := service.Messages(splitIDs(flags.Arg(0)), *name, *limit)
+	messages, err := service.Messages(tctl.SplitIDs(flags.Arg(0)), *name, *limit)
 	if err != nil {
 		return err
 	}
@@ -125,12 +126,12 @@ func runSend(args []string, stdin io.Reader, stdout io.Writer) error {
 	if err != nil {
 		return err
 	}
-	service, err := NewService()
+	service, err := tctl.NewService()
 	if err != nil {
 		return err
 	}
-	ids := splitIDs(flags.Arg(0))
-	if err = service.Send(ids, content, SendOptions{Format: *format, Mentions: mentions}); err != nil {
+	ids := tctl.SplitIDs(flags.Arg(0))
+	if err = service.Send(ids, content, tctl.SendOptions{Format: *format, Mentions: mentions}); err != nil {
 		return err
 	}
 	return writeJSON(stdout, map[string]interface{}{"sent": true, "conversation_ids": ids})

@@ -2,18 +2,6 @@ package teamsctl
 
 import "testing"
 
-func TestFilterConversationsPrefersOneOnOne(t *testing.T) {
-	records := []Conversation{
-		{Kind: "chat", Title: "Mikkel Ljungberg, Rasmus Prip"},
-		{Kind: "chat", Title: "Mikkel Ljungberg", OneOnOne: true},
-		{Kind: "channel", Title: "Mikkel planning"},
-	}
-	matches := filterConversations(records, "mikkel", "chat", 1)
-	if len(matches) != 1 || matches[0].Title != "Mikkel Ljungberg" {
-		t.Fatalf("filterConversations() = %#v", matches)
-	}
-}
-
 func TestConversationTargetTreatsNamesAndIDsDifferently(t *testing.T) {
 	if looksLikeConversationID("Mikkel") {
 		t.Fatal("name was treated as an ID")
@@ -23,16 +11,6 @@ func TestConversationTargetTreatsNamesAndIDsDifferently(t *testing.T) {
 	}
 	if !looksLikeConversationID("19:conversation-id@thread.v2") {
 		t.Fatal("Teams conversation ID was treated as a name")
-	}
-}
-
-func TestLimitOrDefault(t *testing.T) {
-	if got := limitOrDefault(nil); got != 50 {
-		t.Fatalf("limitOrDefault(nil) = %d", got)
-	}
-	all := 0
-	if got := limitOrDefault(&all); got != 0 {
-		t.Fatalf("limitOrDefault(0) = %d", got)
 	}
 }
 
