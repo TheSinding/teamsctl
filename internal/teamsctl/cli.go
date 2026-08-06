@@ -103,7 +103,7 @@ func runMessages(args []string, stdout io.Writer) error {
 	if err != nil {
 		return err
 	}
-	messages, err := service.Messages(strings.Split(flags.Arg(0), ","), *name, *limit)
+	messages, err := service.Messages(tctl.SplitIDs(flags.Arg(0)), *name, *limit)
 	if err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func runSend(args []string, stdin io.Reader, stdout io.Writer) error {
 	if err != nil {
 		return err
 	}
-	ids := strings.Split(flags.Arg(0), ",")
+	ids := tctl.SplitIDs(flags.Arg(0))
 	if err = service.Send(ids, content, tctl.SendOptions{Format: *format, Mentions: mentions}); err != nil {
 		return err
 	}

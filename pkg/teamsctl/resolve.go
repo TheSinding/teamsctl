@@ -35,7 +35,7 @@ func (s *Service) ResolveConversationTarget(target string) (ConversationTarget, 
 		return ConversationTarget{}, fmt.Errorf("recipient is required")
 	}
 	if looksLikeConversationID(target) {
-		return ConversationTarget{IDs: splitIDs(target), Recipients: []string{target}}, nil
+		return ConversationTarget{IDs: SplitIDs(target), Recipients: []string{target}}, nil
 	}
 	if recipients := splitRecipientNames(target); len(recipients) > 1 {
 		conversation, err := s.FindGroupConversation(recipients)
@@ -140,7 +140,7 @@ func matchingGroupConversation(conversations []Conversation, recipients []string
 }
 
 func looksLikeConversationID(target string) bool {
-	ids := splitIDs(target)
+	ids := SplitIDs(target)
 	if len(ids) == 0 {
 		return false
 	}

@@ -296,6 +296,8 @@ func normalizeIDs(ids []string) []string {
 	return out
 }
 
-func splitIDs(value string) []string {
+// SplitIDs splits a comma-separated conversation ID list into normalized IDs,
+// trimming whitespace and dropping empty and duplicate entries.
+func SplitIDs(value string) []string {
 	return normalizeIDs(strings.Split(value, ","))
 }
