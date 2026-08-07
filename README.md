@@ -1,3 +1,6 @@
+[![Release](https://github.com/TheSinding/teamsctl/actions/workflows/release.yml/badge.svg)](https://github.com/TheSinding/teamsctl/actions/workflows/release.yml)
+[!HomeBrew](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fgithub.com%2FTheSinding%2Fhomebrew-tap%2Fraw%2Frefs%2Fheads%2Fmain%2FFormula%2Fteamsctl.rb&search=refs%2Ftags%2Fv(%3F%3Cversion%3E%5Cd%2B(%3F%3A%5C.%5Cd%2B)%2B)&replace=%24%3Cversion%3E&label=Homebrew)
+
 # teamsctl 🤖
 
 Have you ever thougth to yourself... 🤔
